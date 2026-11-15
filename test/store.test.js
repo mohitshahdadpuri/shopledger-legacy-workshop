@@ -49,3 +49,31 @@ test('save reports filesystem write failures', function (t) {
   fs.rmSync(f.directory, { recursive: true });
   assert.throws(function () { f.store.write({}); }, { code: 'ENOENT' });
 });
+
+test('a partial write failure preserves the previous valid database', function (t) {
+  var f = fixture(t);
+  f.store.write({ products: [{ id: 1 }] });
+  var previous = fs.readFileSync(f.file, 'utf8');
+  var write = fs.writeFileSync;
+  var failure = new Error('injected partial write');
+  t.mock.method(fs, 'writeFileSync', function (file, data, options) {
+    write.call(fs, file, data.slice(0, 5), options);
+    throw failure;
+  });
+  assert.throws(function () { f.store.write({ products: [{ id: 2 }] }); }, failure);
+  assert.equal(fs.readFileSync(f.file, 'utf8'), previous);
+  assert.deepEqual(f.store.read(), JSON.parse(previous));
+  assert.deepEqual(fs.readdirSync(f.directory), ['db.json']);
+});
+
+test('rename failures are reported and preserve the previous database', function (t) {
+  var f = fixture(t);
+  f.store.write({ products: [{ id: 1 }] });
+  var previous = fs.readFileSync(f.file, 'utf8');
+  var failure = new Error('injected rename failure');
+  t.mock.method(fs, 'renameSync', function () { throw failure; });
+  assert.throws(function () { f.store.write({ products: [{ id: 2 }] }); }, failure);
+  assert.equal(fs.readFileSync(f.file, 'utf8'), previous);
+  assert.deepEqual(f.store.read(), JSON.parse(previous));
+  assert.deepEqual(fs.readdirSync(f.directory), ['db.json']);
+});
