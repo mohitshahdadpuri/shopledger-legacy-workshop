@@ -1,0 +1,81 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1340" viewBox="0 0 1600 1340" role="img" aria-labelledby="title desc">
+  <title id="title">ShopLedger architecture</title>
+  <desc id="desc">Numbered blue arrows trace order placement. Purple dashed arrows trace printable invoices and GST audit. Red outlines identify the two GST calculation engines. Grey arrows show supporting calls and configuration reads.</desc>
+  <defs>
+    <marker id="blue" markerWidth="9" markerHeight="9" refX="8" refY="4" orient="auto"><path d="M0 0L8 4L0 8Z" fill="#2563eb"/></marker>
+    <marker id="purple" markerWidth="9" markerHeight="9" refX="8" refY="4" orient="auto"><path d="M0 0L8 4L0 8Z" fill="#7c3aed"/></marker>
+    <marker id="grey" markerWidth="9" markerHeight="9" refX="8" refY="4" orient="auto"><path d="M0 0L8 4L0 8Z" fill="#94a3b8"/></marker>
+    <style>
+      text{font-family:Segoe UI,Arial,sans-serif;fill:#0f172a;font-size:15px}
+      .title{font-size:30px;font-weight:700}.subtitle{fill:#475569;font-size:16px}.heading{font-size:13px;font-weight:700;letter-spacing:2px;fill:#64748b}
+      .box{fill:white;stroke:#cbd5e1;stroke-width:1.5;rx:10}.hot{stroke:#dc2626;stroke-width:3}.name{font-size:18px;font-weight:650}.small{font-size:13px;fill:#475569}
+      .order{fill:none;stroke:#2563eb;stroke-width:2;marker-end:url(#blue)}.audit{fill:none;stroke:#7c3aed;stroke-width:2;stroke-dasharray:7 5;marker-end:url(#purple)}.support{fill:none;stroke:#94a3b8;stroke-width:1.3;marker-end:url(#grey)}
+      .label{font-size:13px;fill:#1d4ed8;paint-order:stroke;stroke:#f8fafc;stroke-width:5px;stroke-linejoin:round}.alabel{font-size:13px;fill:#6d28d9;paint-order:stroke;stroke:#f8fafc;stroke-width:5px}
+    </style>
+  </defs>
+  <rect width="1600" height="1340" fill="#f8fafc"/>
+  <text x="40" y="52" class="title">ShopLedger · architecture</text>
+  <text x="40" y="82" class="subtitle">Order placement, printable invoice and GST reconciliation · arrows follow calls, not response traffic</text>
+  <text x="40" y="126" class="heading">BROWSER / EXPRESS</text><text x="400" y="126" class="heading">ROUTERS</text><text x="800" y="126" class="heading">BUSINESS MODULES</text><text x="1280" y="126" class="heading">PERSISTENCE</text>
+
+  <rect x="40" y="155" width="280" height="110" class="box"/><text x="60" y="184" class="name">public/ · Browser UI</text><text x="60" y="211" class="small">index.html · css/style.css</text><text x="60" y="236" class="small">js/app.js · post(), get()</text>
+  <rect x="40" y="315" width="280" height="80" class="box"/><text x="60" y="346" class="name">server.js</text><text x="60" y="373" class="small">express.static() · /api routers</text>
+  <path d="M180 265V315" class="support"/><text x="190" y="293" class="small">HTTP / static assets</text>
+
+  <rect x="400" y="155" width="300" height="80" class="box"/><text x="420" y="186" class="name">routes/orders.js</text><text x="420" y="213" class="small">POST /api/orders · GET · cancel</text>
+  <rect x="400" y="650" width="300" height="80" class="box"/><text x="420" y="681" class="name">routes/products.js</text><text x="420" y="708" class="small">GET /api/products · /api/coupons</text>
+  <rect x="400" y="755" width="300" height="80" class="box"/><text x="420" y="786" class="name">routes/customers.js</text><text x="420" y="813" class="small">GET customers · POST settlement</text>
+  <rect x="400" y="900" width="300" height="100" class="box"/><text x="420" y="931" class="name">routes/reports.js</text><text x="420" y="958" class="small">dashboard · GST audit · preview</text><text x="420" y="980" class="small">GET /api/admin/export</text>
+  <path d="M320 195H400" class="order"/><text x="332" y="179" class="label">1 · POST</text>
+  <path d="M320 355H350V690H400 M350 690V795H400 M350 795V945H400" class="support"/>
+  <text x="52" y="430" class="small">server.js mounts all four routers at /api.</text>
+
+  <rect x="800" y="155" width="330" height="80" class="box"/><text x="820" y="186" class="name">lib/inventory.js</text><text x="820" y="213" class="small">find() · check() · reserve() · release()</text>
+  <rect x="800" y="265" width="330" height="80" class="box"/><text x="820" y="296" class="name">lib/coupons.js</text><text x="820" y="323" class="small">normalizeCode() · validate() · discount</text>
+  <rect x="800" y="375" width="330" height="80" class="box hot"/><text x="820" y="406" class="name">lib/pricing.js</text><text x="820" y="433" class="small">subtotal() · computeTotals()</text>
+  <rect x="800" y="485" width="330" height="80" class="box"/><text x="820" y="516" class="name">lib/ledger.js</text><text x="820" y="543" class="small">findCustomer() · chargeOrderToKhata()</text>
+  <rect x="800" y="595" width="330" height="80" class="box"/><text x="820" y="626" class="name">lib/orders.js</text><text x="820" y="653" class="small">add() · get() · list() · cancel()</text>
+  <rect x="800" y="705" width="330" height="70" class="box"/><text x="820" y="734" class="name">lib/dates.js</text><text x="820" y="758" class="small">today() · normalizeDateKey()</text>
+  <rect x="1180" y="375" width="370" height="80" class="box"/><text x="1200" y="406" class="name">lib/tax.js</text><text x="1200" y="433" class="small">getRateForItem() · splitCgstSgst()</text>
+  <rect x="1280" y="155" width="270" height="100" class="box"/><text x="1300" y="187" class="name">lib/store.js</text><text x="1300" y="214" class="small">read() · appendAudit() · write()</text><text x="1300" y="237" class="small">ensureStructure() · fs</text>
+  <rect x="1280" y="295" width="270" height="50" class="box"/><text x="1300" y="327" class="name">data/db.json</text>
+  <path d="M700 166H1280" class="order"/><text x="1140" y="153" class="label">2 · read()</text>
+  <path d="M700 195H800" class="order"/><text x="709" y="183" class="label">3 · find/check</text>
+  <path d="M700 218H742V305H800" class="order"/><text x="710" y="285" class="label">4 · validate</text>
+  <path d="M700 225H730V415H800" class="order"/><text x="707" y="395" class="label">5 · totals</text>
+  <path d="M700 230H718V525H800" class="order"/><text x="706" y="505" class="label">6 · Khata*</text>
+  <path d="M700 247H778V219H800" class="order"/><text x="805" y="253" class="label">7 · reserve() (same inventory module)</text>
+  <path d="M700 235H706V635H800" class="order"/><text x="710" y="615" class="label">8 · add()</text>
+  <path d="M690 155V140H1260V229H1280" class="order"/><text x="931" y="134" class="label">9 · appendAudit() → write()</text>
+  <path d="M1415 255V295" class="order"/><text x="1426" y="281" class="label">10 · writeFileSync</text>
+  <path d="M1130 415H1180" class="support"/>
+  <path d="M965 375V345" class="support"/>
+  <path d="M1045 675V705 M870 565V705" class="support"/>
+  <text x="1145" y="493" class="small">* Khata only for paymentMode = 'khata'.</text>
+  <text x="1145" y="519" class="small">Numbers show route execution order.</text>
+  <text x="1145" y="545" class="small">All mutations occur in memory until write().</text>
+  <text x="1145" y="571" class="small">reserve() deducts physical stock.</text>
+  <text x="1145" y="597" class="small">Steps 3 and 7 call the same module.</text>
+
+  <text x="40" y="872" class="heading">PRINTABLE INVOICE / GST AUDIT</text>
+  <rect x="40" y="900" width="280" height="100" class="box"/><text x="60" y="931" class="name">public/js/app.js</text><text x="60" y="958" class="small">Invoice link · GST audit</text><text x="60" y="981" class="small">loadDashboardSummary()</text>
+  <rect x="40" y="1050" width="660" height="80" class="box"/><text x="60" y="1081" class="name">server.js · GET /orders/:id/invoice</text><text x="60" y="1108" class="small">store.read() → orders.get() → invoice.render()</text>
+  <rect x="800" y="900" width="330" height="80" class="box"/><text x="820" y="931" class="name">lib/reports.js</text><text x="820" y="958" class="small">getGstReconciliation() · dashboard</text>
+  <rect x="800" y="1050" width="330" height="80" class="box hot"/><text x="820" y="1081" class="name">lib/invoice.js</text><text x="820" y="1108" class="small">render() · computeInvoiceFigures()</text>
+  <path d="M320 945H400" class="audit"/><text x="329" y="927" class="alabel">GET</text>
+  <path d="M700 945H800" class="audit"/><text x="707" y="927" class="alabel">audit</text>
+  <path d="M965 980V1050" class="audit"/><text x="978" y="1014" class="alabel">computeInvoiceFigures()</text>
+  <path d="M180 1000V1050" class="audit"/><text x="192" y="1033" class="alabel">invoice GET</text>
+  <path d="M700 1090H800" class="audit"/><text x="707" y="1074" class="alabel">render()</text>
+  <text x="1180" y="939" class="small">Audit compares stored order totals</text><text x="1180" y="963" class="small">with computeInvoiceFigures().</text><text x="1180" y="987" class="small">It does not call pricing.computeTotals().</text>
+
+  <rect x="1280" y="705" width="270" height="90" class="box"/><text x="1300" y="737" class="name">config.js</text><text x="1300" y="763" class="small">shop · tax · coupons · inventory</text><text x="1300" y="784" class="small">port · adminKey</text>
+  <path d="M1365 455V705" class="support"/><text x="1375" y="668" class="small">tax reads config</text>
+  <text x="400" y="1172" class="small">Other calls: products router → store / inventory / tax / coupons; customers router → store / ledger.</text>
+  <text x="400" y="1196" class="small">reports router → store / pricing / coupons / config; orders.cancel → inventory / ledger; reports → inventory / ledger.</text>
+  <text x="400" y="1220" class="small">Config readers: server, reports router, inventory, coupons, tax, invoice. Dates callers: orders, ledger.</text>
+  <path d="M40 1256H90" class="order"/><text x="104" y="1261">Numbered blue: place an order</text>
+  <path d="M460 1256H510" class="audit"/><text x="524" y="1261">Purple dashed: invoice / GST audit</text>
+  <path d="M1000 1256H1050" class="support"/><text x="1064" y="1261">Grey: supporting calls / config reads</text>
+  <rect x="40" y="1284" width="24" height="24" class="box hot"/><text x="78" y="1303" style="fill:#b91c1c;font-weight:650">Ticket 1 hotspot: two engines compute the same GST</text>
+</svg>
