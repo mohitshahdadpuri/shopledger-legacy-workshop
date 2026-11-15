@@ -7,16 +7,16 @@ function fixture() {
     '02/02/2022', '18/02/2022', '04/03/2022', '15/03/2022']
     .map((date, i) => ({ id: 1001 + i, date })) };
 }
-const current = [1004, 1001, 1006, 1008, 1003, 1002, 1007, 1005];
-test('CURRENT BEHAVIOUR: history sorts day-first strings', () => {
+const current = [1008, 1007, 1006, 1005, 1004, 1003, 1002, 1001];
+test('history sorts chronologically newest first', () => {
   assert.deepEqual(orders.list(fixture()).map(o => o.id), current);
 });
 for (const [from, to, expected] of [
-  ['2022-01-01', '2022-01-31', current],
-  ['2022-01-01', '2022-02-28', [1006, 1008, 1003, 1002, 1007, 1005]],
-  ['2021-12-28', '2022-01-05', []]
+  ['2022-01-01', '2022-01-31', [1004, 1003, 1002]],
+  ['2022-01-01', '2022-02-28', [1006, 1005, 1004, 1003, 1002]],
+  ['2021-12-28', '2022-01-05', [1002, 1001]]
 ]) {
-  test(`CURRENT BEHAVIOUR: date range ${from} through ${to}`, () => {
+  test(`inclusive date range ${from} through ${to}`, () => {
     assert.deepEqual(orders.list(fixture(), { from, to }).map(o => o.id), expected);
   });
 }
