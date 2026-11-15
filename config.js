@@ -1,8 +1,8 @@
 module.exports = {
   port: process.env.PORT || 3000,
 
-  // used by /api/admin/export and /api/admin/reset
-  adminKey: 'shopledger-admin-2021',
+  // Administrator export credential; missing configuration disables export.
+  adminKey: process.env.SHOPLEDGER_ADMIN_KEY,
 
   shop: {
     name: 'Corner Shop Kirana & Wholesale',

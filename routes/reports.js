@@ -1,4 +1,5 @@
 var express = require('express');
+var crypto = require('crypto');
 var config = require('../config');
 var store = require('../lib/store');
 var reports = require('../lib/reports');
@@ -59,7 +60,13 @@ router.post('/pricing/preview', function (req, res) {
 });
 
 router.get('/admin/export', function (req, res) {
-  if (req.query.key != config.adminKey) return res.sendStatus(403);
+  var key = req.get('x-admin-key');
+  if (!config.adminKey || !key) return res.sendStatus(403);
+  var supplied = Buffer.from(key);
+  var expected = Buffer.from(config.adminKey);
+  if (supplied.length !== expected.length || !crypto.timingSafeEqual(supplied, expected)) {
+    return res.sendStatus(403);
+  }
   res.json(store.read());
 });
 
